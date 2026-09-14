@@ -77,17 +77,17 @@
   /* -------------------------------------------------- db */
   function seed() {
     const now = Date.now();
-    const mkCo = (id, name, city, tier, since, rating, jobs, verified, phone, about) =>
-      ({ id, name, city, tier, since, rating, jobs, verified, phone, about, createdAt: now });
+    const mkCo = (id, name, city, since, rating, jobs, verified, phone, about) =>
+      ({ id, name, city, since, rating, jobs, verified, phone, about, createdAt: now });
     const companies = [
-      mkCo('f1', 'Kervan Yol Taşımacılık', 'İstanbul', 'altin', '2016-04', 4.8, 612, true, '0532 000 11 01', 'Şehirler arası evden eve taşıma, modüler asansör ve parça eşya hattı.'),
-      mkCo('f2', 'Toroslar Evden Eve', 'Adana', 'gumus', '2019-09', 4.6, 288, true, '0533 000 11 02', 'Çukurova bölgesi ve Akdeniz hattında tam kapsamlı taşımacılık.'),
-      mkCo('f3', 'Meridyen Nakliyat', 'Ankara', 'altin', '2012-02', 4.9, 1040, true, '0535 000 11 03', 'Başkent çıkışlı Türkiye geneli sefer planlaması.'),
-      mkCo('f4', 'Ege Rota Lojistik', 'İzmir', 'gumus', '2020-06', 4.5, 173, false, '0536 000 11 04', 'Ege içi ve Ege çıkışlı hatlarda parça eşya birleştirme.'),
-      mkCo('f5', 'Fırat Asansörlü Taşıma', 'Gaziantep', 'standart', '2022-11', 4.3, 64, true, '0537 000 11 05', 'Güneydoğu hattında asansörlü taşıma.'),
-      mkCo('f6', 'Karadeniz Sefer Nakliye', 'Samsun', 'gumus', '2018-03', 4.4, 341, true, '0538 000 11 06', 'Karadeniz sahili boyunca şehirler arası taşımacılık.'),
-      mkCo('f8', 'Boğaziçi Ekspres Nakliyat', 'İstanbul', 'gumus', '2015-01', 4.7, 528, true, '0541 000 11 08', 'Avrupa yakası çıkışlı hızlı sevkiyat.'),
-      mkCo('f10', 'Doğu Ekseni Lojistik', 'Diyarbakır', 'altin', '2014-10', 4.8, 780, true, '0543 000 11 10', 'Doğu ve Güneydoğu hattında tam donanımlı filo.')
+      mkCo('f1', 'Kervan Yol Taşımacılık', 'İstanbul', '2016-04', 4.8, 612, true, '0532 000 11 01', 'Şehirler arası evden eve taşıma, modüler asansör ve parça eşya hattı.'),
+      mkCo('f2', 'Toroslar Evden Eve', 'Adana', '2019-09', 4.6, 288, true, '0533 000 11 02', 'Çukurova bölgesi ve Akdeniz hattında tam kapsamlı taşımacılık.'),
+      mkCo('f3', 'Meridyen Nakliyat', 'Ankara', '2012-02', 4.9, 1040, true, '0535 000 11 03', 'Başkent çıkışlı Türkiye geneli sefer planlaması.'),
+      mkCo('f4', 'Ege Rota Lojistik', 'İzmir', '2020-06', 4.5, 173, false, '0536 000 11 04', 'Ege içi ve Ege çıkışlı hatlarda parça eşya birleştirme.'),
+      mkCo('f5', 'Fırat Asansörlü Taşıma', 'Gaziantep', '2022-11', 4.3, 64, true, '0537 000 11 05', 'Güneydoğu hattında asansörlü taşıma.'),
+      mkCo('f6', 'Karadeniz Sefer Nakliye', 'Samsun', '2018-03', 4.4, 341, true, '0538 000 11 06', 'Karadeniz sahili boyunca şehirler arası taşımacılık.'),
+      mkCo('f8', 'Boğaziçi Ekspres Nakliyat', 'İstanbul', '2015-01', 4.7, 528, true, '0541 000 11 08', 'Avrupa yakası çıkışlı hızlı sevkiyat.'),
+      mkCo('f10', 'Doğu Ekseni Lojistik', 'Diyarbakır', '2014-10', 4.8, 780, true, '0543 000 11 10', 'Doğu ve Güneydoğu hattında tam donanımlı filo.')
     ];
     const mkP = (id, f, cat, from, to, text, min) => ({
       id, companyId: f, category: cat, from, to, text,

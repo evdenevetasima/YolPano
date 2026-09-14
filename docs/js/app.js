@@ -7,7 +7,7 @@
 
   /* --------------------------------------------------------- durum */
   const S = {
-    data: null,          // bootstrap (iller, kategoriler, kademeler, fiyat modeli)
+    data: null,          // bootstrap (iller, kategoriler, fiyat modeli)
     posts: [], total: 0, page: 1, pages: 1, loading: false,
     q: '', cat: 'all', sort: 'smart', city: '', from: '', to: '',
     liveCount: 0,
@@ -774,7 +774,7 @@
     S.posts = r.posts;
   }
 
-  /* ------------------------------------------------------- üyelik */
+  /* -------------------------------------------------- hesaplayıcı */
   /* -------------------------------------------------------- canlı akış */
   let es = null;
   function connectSSE() {

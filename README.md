@@ -68,11 +68,11 @@ npm run test:ui      # Arayüz: gerçek Chromium ile 43 adım (ilk kurulumda
 - **Güzergâh filtresi + rota eşleştirme:** çıkış→varış yazınca hem filtreler hem
   kart üzerinde km/saat hesabı (81 ilin koordinatıyla haversine + karayolu katsayısı).
 - **Rota alarmı:** "Gaziantep→İstanbul boş araç düşünce haber ver" — eşleşen yeni
-  ilan SSE + sesli uyarı ile anlık bildirilir (kademeye göre alarm limiti).
+  ilan SSE + sesli uyarı ile anlık bildirilir (herkes için 20 alarm).
 - **Fiyat tahmini aracı:** mesafe + hacim (hazır presetler) + kat/asansör + ek
   hizmetler → kalem kalem kırılım ve gerçekçi fiyat aralığı; tek tıkla ilana dönüşür.
-- **Akıllı akış kuralları:** en yeni üstte; ücretli "öne al" hakkı kullanılan ilan
-  1 saat boyunca akışın tepesinde (boost rozetiyle).
+- **Akıllı akış kuralları:** en yeni üstte; "öne al" aracı (ücretsiz) kullanılan ilan
+  1 saat boyunca akışın tepesinde kalır.
 - **Hesap sayfası:** firma kartı, kota çubukları, ilanlarım, alarm yönetimi.
 - **Yönetim paneli (demo):** istatistikler, kategori dağılımı, son ilanlar,
   örnek üretim ve veri sıfırlama (`#/yonetim`).
@@ -89,7 +89,7 @@ npm run test:ui      # Arayüz: gerçek Chromium ile 43 adım (ilk kurulumda
 
 ```
 server.js            HTTP + JSON API + SSE + kurgusal ilan üretici
-data/taxonomy.js     kategoriler, kademeler, fiyat modeli
+data/taxonomy.js     kategoriler ve fiyat tahmin modeli
 data/seed.json       kurgusal firma/ilan tohumu (tümü örnek veridir)
 public/              arayüz (index.html, css/app.css, js/app.js, js/provinces.js)
 test/api.test.js     API uçtan uca testleri (bağımlılıksız)
