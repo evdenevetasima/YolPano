@@ -1,0 +1,7 @@
+node_modules
+data/db.json
+data/db.json.tmp
+test/ui-desktop.png
+test/ui-mobile.png
+.git
+*.log

@@ -16,6 +16,28 @@ npm start            # http://localhost:3000  (PORT=... ile değiştirilebilir)
 ilanlardan otomatik üretilir. Sunucu her 45 saniyede bir kurgusal ilan üretip
 SSE ile tüm açık sekmelere düşürür (`YOLPANO_QUIET=1` ile kapatılır).
 
+## Yayınlama (deployment)
+
+### Render.com — ücretsiz, en kolay yol
+1. [render.com](https://render.com)'e GitHub hesabınızla girin.
+2. **New → Web Service** → `evdenevetasima/YolPano` deposunu seçin.
+3. Render `render.yaml` blueprint'ini otomatik önerir; onaylayın.
+   (Elle kuracaksanız: Build `npm install --omit=dev`, Start `npm start`.)
+4. Birkaç dakika sonra `https://yolpano.onrender.com` benzeri bir adresle
+   site internette yayında olur. Ücretsiz planda uyuyabilir; ilk istek uyandırır.
+
+### Docker ile herhangi bir sunucu / Fly.io / Railway
+```bash
+docker build -t yolpano .
+docker run -p 3000:3000 yolpano     # http://localhost:3000
+```
+Fly.io: `fly launch` → Dockerfile otomatik kullanılır. Railway: depo bağlayın,
+başlangıç komutu `npm start`.
+
+> Not: Sunucu durumu `data/db.json`'da tutar; container/platform yeniden
+> başlatmalarında veri sıfırlanıp `seed.json`'dan yeniden üretilir (demo için
+> idealdir). Kalıcı veri isterseniz bu dosyayı bir volume'e bağlayın.
+
 ## Testler
 
 ```bash
