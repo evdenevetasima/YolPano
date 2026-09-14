@@ -1,0 +1,10 @@
+{
+  "name": "Yolpano — Nakliyecilerin Güzergâh Panosu",
+  "short_name": "Yolpano",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6f4",
+  "theme_color": "#0b1f26",
+  "lang": "tr",
+  "icons": [{ "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

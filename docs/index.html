@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Yolpano — Nakliyecilerin Güzergâh Panosu</title>
+<meta name="description" content="Yolpano: nakliyecilerin boş araç, yük/iş, parça eşya, asansör ve depolama ilanlarını paylaştığı canlı güzergâh panosu. Rota eşleştirme, fiyat tahmini ve rota alarmı.">
+<meta name="theme-color" content="#0b1f26">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="logo.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="css/app.css">
+<meta property="og:title" content="Yolpano — Nakliyecilerin Güzergâh Panosu">
+<meta property="og:description" content="Boş araç, yük/iş ve parça eşya ilanları tek panoda. Rota eşleştir, fiyat tahmini al, rota alarmı kur.">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Yolpano","description":"Nakliyecilerin boş araç, yük ve parça eşya ilanlarını paylaştığı canlı güzergâh panosu.","inLanguage":"tr-TR"}
+</script>
+</head>
+<body>
+<div style="background:#0b1f26;color:#9dc3bd;font:12.5px/1.5 system-ui,sans-serif;text-align:center;padding:7px 12px">Statik demo (github.io): veriler yalnızca bu tarayıcıda saklanır. Çok kullanıcılı canlı sürüm için README'deki sunucu kurulumuna bakın.</div>
+
+<header class="topbar" id="topbar">
+  <a class="brand" href="#/">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="30" height="30" role="presentation">
+        <path d="M3 21h6l3-8h9l3 8h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="24" r="2.6" fill="none" stroke="currentColor" stroke-width="2.4"/>
+        <circle cx="22" cy="24" r="2.6" fill="none" stroke="currentColor" stroke-width="2.4"/>
+        <path d="M5 13h7M5 9h10" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <span class="brand-text"><b class="brand-name">Yol<strong>pano</strong></b><em>nakliyat defteri</em></span>
+  </a>
+
+  <div class="searchwrap">
+    <svg class="ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="globalSearch" type="search" placeholder="İlan, firma, il veya güzergâh ara  ( / )" autocomplete="off" aria-label="Arama">
+    <kbd id="searchKbd">/</kbd>
+  </div>
+
+  <nav class="topnav">
+    <a href="#/hesapla" data-nav="hesapla"><span class="ico-mini">₺</span> Fiyat Tahmini</a>
+    <a href="#/kayitli" data-nav="kayitli"><span class="ico-mini">♥</span> Kayıtlı <b id="savedCount" class="chip-mini">0</b></a>
+    <a href="#/pano" data-nav="pano"><span class="ico-mini">◆</span> Pano</a>
+  </nav>
+
+  <div class="topright">
+    <span class="live" id="liveDot" title="Canlı akış bağlı"><i></i>Canlı</span>
+    <button class="btn btn-ghost" id="upgradeBtn">Üyelik</button>
+    <button class="btn btn-primary" id="topPostBtn">İlan Ver</button>
+  </div>
+</header>
+
+<main id="view" class="view" tabindex="-1"></main>
+
+<nav class="mobilenav" aria-label="Alt menü">
+  <a href="#/" data-nav="feed">Akış</a>
+  <a href="#/hesapla" data-nav="hesapla">Tahmin</a>
+  <button id="mobilePost" class="mobilenav-post">+ İlan</button>
+  <a href="#/kayitli" data-nav="kayitli">Kayıtlı</a>
+  <a href="#/pano" data-nav="pano">Pano</a>
+</nav>
+
+<button class="fab" id="fab" aria-label="Yeni ilan">
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+</button>
+
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+
+<script src="js/provinces.js"></script>
+<script src="js/local-api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

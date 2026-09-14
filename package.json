@@ -8,7 +8,9 @@
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node test/api.test.js",
-    "test:ui": "node test/ui.test.js"
+    "test:ui": "node test/ui.test.js",
+    "test:static": "node test/static.test.js",
+    "build:static": "python3 scripts/build_static.py"
   },
   "engines": { "node": ">=18" },
   "devDependencies": {

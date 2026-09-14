@@ -26,6 +26,14 @@ SSE ile tüm açık sekmelere düşürür (`YOLPANO_QUIET=1` ile kapatılır).
 4. Birkaç dakika sonra `https://yolpano.onrender.com` benzeri bir adresle
    site internette yayında olur. Ücretsiz planda uyuyabilir; ilk istek uyandırır.
 
+### GitHub Pages — statik demo (github.io)
+`docs/` klasörü, arayüzün **sunucusuz** sürümüdür: API tarayıcı içinde
+localStorage ile taklit edilir (kendi ilanınızı verir, kaydeder, yenileyince
+korursunuz; ancak yalnızca o tarayıcıda). Derlemek için:
+`python3 scripts/build_static.py`. Pages, `main` dalındaki `/docs`
+klasöründen etkinleştirildi → **https://evdenevetasima.github.io/YolPano/**
+Çok kullanıcılı gerçek sürüm için yukarıdaki Render/Docker yollarını kullanın.
+
 ### Docker ile herhangi bir sunucu / Fly.io / Railway
 ```bash
 docker build -t yolpano .
