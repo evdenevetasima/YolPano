@@ -489,7 +489,7 @@
   async function reveal(id, btn) {
     try {
       const r = await api('/api/post/reveal', { id });
-      if (r.error) { toast('Numara açılamadı', r.error + (r.needUpgrade ? ' Üyeliğinizi yükseltin.' : ''), 'warn'); return; }
+      if (r.error) { toast('Numara açılamadı', r.error, 'warn'); return; }
       S.revealed.set(id, r.phone);
       toast('Numara açıldı', 'Tamamen ücretsiz — sınırsız hak.', 'ok');
       const hash = location.hash;

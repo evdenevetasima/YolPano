@@ -49,7 +49,7 @@ başlangıç komutu `npm start`.
 ## Testler
 
 ```bash
-npm test             # API: 77 uçtan uca doğrulama (kota, sahiplik, SSE, güvenlik…)
+npm test             # API: 75 uçtan uca doğrulama (sahiplik, SSE, güvenlik…)
 npm run test:ui      # Arayüz: gerçek Chromium ile 43 adım (ilk kurulumda
                      # `npx playwright install chromium` gerekebilir)
 ```
@@ -73,7 +73,7 @@ npm run test:ui      # Arayüz: gerçek Chromium ile 43 adım (ilk kurulumda
   hizmetler → kalem kalem kırılım ve gerçekçi fiyat aralığı; tek tıkla ilana dönüşür.
 - **Akıllı akış kuralları:** en yeni üstte; "öne al" aracı (ücretsiz) kullanılan ilan
   1 saat boyunca akışın tepesinde kalır.
-- **Hesap sayfası:** firma kartı, kota çubukları, ilanlarım, alarm yönetimi.
+- **Hesap sayfası:** firma kartı, ilanlarım, alarm yönetimi.
 - **Yönetim paneli (demo):** istatistikler, kategori dağılımı, son ilanlar,
   örnek üretim ve veri sıfırlama (`#/yonetim`).
 - **PWA bildirimi** (manifest + tema rengi), mobil alt menü, klavye kısayolu `/` arama.
