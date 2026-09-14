@@ -206,7 +206,7 @@
       if (S.from || S.to) bits.push((S.from || '?') + ' → ' + (S.to || '?') + ' rotası');
       if (S.city) bits.push(S.city);
       rl.innerHTML = '<div><b>' + S.total + '</b> ilan listeleniyor' + (bits.length ? ' · ' + bits.join(' · ') : '') + '</div>' +
-        '<div class="quota">Bugün eklenen: <b>' + (stats ? stats.today : '—') + '</b></div>';
+        '<div class="inforow">Bugün eklenen: <b>' + (stats ? stats.today : '—') + '</b></div>';
     }
     if (stats) renderRailStats(stats);
   }
@@ -275,7 +275,7 @@
 
         '<aside class="rail">' +
           '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Rota alarmı</span><small>' + alarmQuotaText() + '</small></div>' +
+            '<div class="card-title"><span><span class="dot"></span> Rota alarmı</span><small>' + alarmCountText() + '</small></div>' +
             '<div class="fieldrow" style="margin-bottom:8px">' +
               '<div class="field"><label>Çıkış</label><input id="alarmFrom" list="cityList" placeholder="İl"></div>' +
               '<div class="field"><label>Varış</label><input id="alarmTo" list="cityList" placeholder="İl"></div>' +
@@ -312,7 +312,7 @@
     loadPosts(true);
   }
 
-  function alarmQuotaText() {
+  function alarmCountText() {
     const n = (S.data.viewer.alarms || []).length;
     return n + '/20';   // ücretsiz modelde herkes 20 alarm kurabilir
   }
@@ -361,7 +361,7 @@
           '<div class="field"><label>Kısa tanıtım</label><input id="cAbout" value="' + esc(v.company ? v.company.about : '') + '" placeholder="Filomuz, hizmet alanımız..."></div>' +
         '</div>' +
         '<div class="composer-foot">' +
-          '<div class="quota">Yolpano tamamen ücretsiz — sınırsız paylaşım.</div>' +
+          '<div class="inforow">Yolpano tamamen ücretsiz — sınırsız paylaşım.</div>' +
           '<button class="btn btn-primary" data-act="publish" id="publishBtn">Yayınla</button>' +
         '</div>' +
       '</div>' +
@@ -701,7 +701,7 @@
 
         '<aside class="rail">' +
           '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Rota alarmları</span><small>' + alarmQuotaText() + '</small></div>' +
+            '<div class="card-title"><span><span class="dot"></span> Rota alarmları</span><small>' + alarmCountText() + '</small></div>' +
             '<div id="alarmList">' + alarmListHTML() + '</div>' +
           '</div>' +
         '</aside>' +

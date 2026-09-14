@@ -335,8 +335,8 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
 .countbar { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 4px; }
 .countbar b.bad { color: #b02842; }
 .composer-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-.quota { font-size: 12.5px; color: var(--muted); }
-.quota b { color: var(--ink); }
+.inforow { font-size: 12.5px; color: var(--muted); }
+.inforow b { color: var(--ink); }
 
 /* -------------------------------------------------------------- rail */
 .alarm-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
@@ -440,7 +440,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
 .table td { padding: 9px 8px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
 .table tr:hover td { background: #fafcfb; }
 
-.quota-bars { display: flex; flex-direction: column; gap: 10px; }
 .bar { height: 7px; border-radius: 999px; background: var(--line-2); overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s ease; }
 .bar.warn i { background: var(--amber); }
