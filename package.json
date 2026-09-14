@@ -1,0 +1,17 @@
+{
+  "name": "yolpano",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Yolpano — nakliyeciler için boş araç / yük / parça eşya panosu (bağımlılıksız Node uygulaması)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test/api.test.js",
+    "test:ui": "node test/ui.test.js"
+  },
+  "engines": { "node": ">=18" },
+  "devDependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}

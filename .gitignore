@@ -1,0 +1,14 @@
+# bağımlılıklar
+node_modules/
+
+# çalışma zamanı verisi (ilk açılışta seed.json'dan otomatik üretilir)
+data/db.json
+data/db.json.tmp
+
+# test çıktıları
+test/ui-desktop.png
+test/ui-mobile.png
+
+# günlük / gürültü
+*.log
+.DS_Store
