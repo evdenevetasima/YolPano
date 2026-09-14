@@ -20,11 +20,6 @@
     { id: 'parca', label: 'Parça Eşya', short: 'Parça', icon: 'package', desc: 'Az parça / koli taşımacılığı, aynı güzergâhta birleştirme.', needsRoute: true, color: 'rose' },
     { id: 'ekip', label: 'Ekip / Usta', short: 'Ekip', icon: 'users', desc: 'Yükleme-boşaltma ekibi, montaj ustası, hamal desteği.', needsRoute: false, color: 'slate' }
   ];
-  const TIERS = {
-    standart: { id: 'standart', label: 'Ücretsiz Üye', badge: null, color: 'slate', dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 0, perks: ['Sınırsız ilan paylaşımı', 'Sınırsız numara açma', 'Sınırsız öne alma', '20 rota alarmı'] },
-    gumus: { id: 'gumus', label: 'Gümüş Üye', badge: 'Gümüş Üye', color: 'sky', dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 2, perks: ['Ücretsiz üyenin tümü', 'Gümüş rozeti', 'Aramada üstte çıkma', '20 rota alarmı'] },
-    altin: { id: 'altin', label: 'Altın Üye', badge: 'Altın Üye', color: 'amber', dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 4, perks: ['Ücretsiz üyenin tümü', 'Altın rozeti', 'Aramada en üstte', '20 rota alarmı'] }
-  };
   const PRICING = { base: 3200, perKm: 26, perM3: 950, perFloorNoElevator: 450, longHaulDiscount: 0.82, longHaulKm: 400, insurance: 0.02, vat: 0.2, volumePresets: { '1+1': 22, '2+1': 32, '3+1': 45, '4+1': 58, 'Ofis': 50, 'Parça': 8 } };
   const SERVICE_OPTIONS = [
     { id: 'paketleme', label: 'Paketleme / ambalaj dahil', mult: 1.12 },
@@ -127,7 +122,7 @@
   function device() {
     let d = db.devices[deviceId()];
     if (!d) {
-      d = db.devices[deviceId()] = { tier: 'standart', saved: [], alarms: [], ownedPosts: [], name: '', daily: { posts: 0, reveals: 0, refreshes: 0 } };
+      d = db.devices[deviceId()] = { saved: [], alarms: [], ownedPosts: [], name: '', daily: { posts: 0, reveals: 0, refreshes: 0 } };
       save();
     }
     return d;
@@ -135,7 +130,7 @@
   const company = id => db.companies.find(c => c.id === id);
 
   function publicCompany(c) {
-    return { id: c.id, name: c.name, city: c.city, tier: c.tier, badge: TIERS[c.tier].badge, since: c.since, about: c.about, rating: c.rating, jobs: c.jobs, verified: !!c.verified, initials: (c.name.split(/\s+/).slice(0, 2).map(w => w[0]).join('') || 'YP').toLocaleUpperCase('tr-TR') };
+    return { id: c.id, name: c.name, city: c.city, since: c.since, about: c.about, rating: c.rating, jobs: c.jobs, verified: !!c.verified, initials: (c.name.split(/\s+/).slice(0, 2).map(w => w[0]).join('') || 'YP').toLocaleUpperCase('tr-TR') };
   }
   function publicPost(p, full) {
     const d = device();
@@ -150,7 +145,7 @@
     };
     out.mine = mine;
     if (mine) out.token = p.token;
-    if (full) out.phone = mine || d.tier === 'altin' ? c.phone : null;
+    if (full) out.phone = c.phone;
     return out;
   }
   function stats() {
@@ -167,11 +162,9 @@
   }
   function viewer() {
     const d = device();
-    const t = TIERS[d.tier];
     const co = db.companies.find(c => (d.ownedPosts || []).some(id => (db.posts.find(p => p.id === id) || {}).companyId === c.id));
     return {
-      deviceId: deviceId(), tier: d.tier, tierLabel: t.label, badge: t.badge,
-      quota: { posts: { used: d.daily.posts, limit: t.dailyPostLimit }, reveals: { used: d.daily.reveals, limit: t.dailyReveal }, refreshes: { used: d.daily.refreshes, limit: t.dailyRefresh } },
+      deviceId: deviceId(), todayPosts: d.daily.posts,
       saved: d.saved, alarms: d.alarms, ownedPosts: d.ownedPosts, name: d.name,
       company: co ? { ...publicCompany(co), phone: co.phone, token: co.token } : null
     };
@@ -253,7 +246,7 @@
     const body = init.body ? JSON.parse(init.body) : {};
     await new Promise(r => setTimeout(r, 60)); // gerçekçi gecikme
 
-    if (p === '/api/bootstrap') return R({ provinces: P().map(x => ({ name: x.name, plaka: x.plaka })), categories: CATEGORIES, tiers: Object.values(TIERS), serviceOptions: SERVICE_OPTIONS, hotRoutes: HOT_ROUTES, pricing: PRICING, stats: stats(), viewer: viewer() });
+    if (p === '/api/bootstrap') return R({ provinces: P().map(x => ({ name: x.name, plaka: x.plaka })), categories: CATEGORIES, serviceOptions: SERVICE_OPTIONS, hotRoutes: HOT_ROUTES, pricing: PRICING, stats: stats(), viewer: viewer() });
     if (p === '/api/posts') return R(listPosts(Object.fromEntries(u.searchParams.entries())));
     if (p === '/api/stats') return R({ ...stats(), viewer: viewer() });
     if (p === '/api/viewer') return R(viewer());
@@ -287,7 +280,7 @@
       if (need && !from) return R({ error: 'Bu kategori için çıkış ili seçin.' });
       let co = db.companies.find(c => (d.ownedPosts || []).some(id => (db.posts.find(pp => pp.id === id) || {}).companyId === c.id));
       if (!co) {
-        co = { id: uid('f'), name: titleCase(body.companyName) || 'Misafir Taşımacı', city: titleCase(body.city) || from || '', tier: d.tier, since: new Date().toISOString().slice(0, 7), about: body.about || 'Yolpano üzerinden ilan veren taşımacı.', rating: 0, jobs: 0, verified: false, phone: body.phone || '0500 000 00 00', createdAt: Date.now(), token: uid('tok_') };
+        co = { id: uid('f'), name: titleCase(body.companyName) || 'Misafir Taşımacı', city: titleCase(body.city) || from || '', since: new Date().toISOString().slice(0, 7), about: body.about || 'Yolpano üzerinden ilan veren taşımacı.', rating: 0, jobs: 0, verified: false, phone: body.phone || '0500 000 00 00', createdAt: Date.now(), token: uid('tok_') };
         db.companies.push(co);
       }
       const now = Date.now();
@@ -326,7 +319,6 @@
       }, 2500);
       return R({ ok: true, message: msg });
     }
-    if (p === '/api/tier') { const d = device(); if (!TIERS[body.tier]) return R({ error: 'Geçersiz üyelik.' }); d.tier = body.tier; save(); return R({ ok: true, tier: body.tier }); }
     if (p === '/api/demo/gen') { bus.emit('post', publicPost(db.posts[0])); return R({ ok: true, post: publicPost(db.posts[0]) }); }
     if (p === '/api/reset') { db = seed(); save(); return R({ ok: true }); }
     return R({ error: 'Uç nokta bulunamadı.' }, 404);

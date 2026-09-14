@@ -15,7 +15,7 @@ const DB_FILE = path.join(DATA, 'db.json');
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
-const { CATEGORIES, TIERS, PRICING, SERVICE_OPTIONS, HOT_ROUTES } = require('./data/taxonomy');
+const { CATEGORIES, PRICING, SERVICE_OPTIONS, HOT_ROUTES } = require('./data/taxonomy');
 
 /* ---------------------------------------------------------------- iller */
 // public/js/provinces.js tarayıcı içindir; sunucu tarafında aynı veriyi okuyoruz.
@@ -126,7 +126,7 @@ function seedDb() {
   return {
     version: 1,
     companies, posts, messages,
-    devices: {},          // deviceId -> { tier, daily:{date,posts,reveals,refreshes}, saved:[], alarms:[], name }
+    devices: {},          // deviceId -> { daily:{date,posts,reveals,refreshes}, saved:[], alarms:[], name, ownedPosts }
     reports: [],
     stats: { published: 11427, activeCompanies: companies.length + 6391, volumeTL: 98620000 }
   };
@@ -154,8 +154,7 @@ function resetDb() { db = seedDb(); fs.writeFileSync(DB_FILE, JSON.stringify(db,
 function getDevice(id) {
   if (!db.devices[id]) {
     db.devices[id] = {
-      tier: 'standart',
-      daily: todayQuota(),
+      daily: freshDaily(),
       saved: [],
       alarms: [],
       name: '',
@@ -166,11 +165,10 @@ function getDevice(id) {
   }
   const d = db.devices[id];
   const today = new Date().toISOString().slice(0, 10);
-  if (!d.daily || d.daily.date !== today) d.daily = todayQuota();
+  if (!d.daily || d.daily.date !== today) d.daily = freshDaily();
   return d;
 }
-function todayQuota() { return { date: new Date().toISOString().slice(0, 10), posts: 0, reveals: 0, refreshes: 0 }; }
-function tierOf(deviceId) { return TIERS[getDevice(deviceId).tier] || TIERS.standart; }
+function freshDaily() { return { date: new Date().toISOString().slice(0, 10), posts: 0, reveals: 0, refreshes: 0 }; }
 
 /* --------------------------------------------------------------- sse */
 const sseClients = new Set();
@@ -203,8 +201,8 @@ function isBoosted(p) { return p.boostUntil > Date.now(); }
 
 function publicCompany(c) {
   return {
-    id: c.id, name: c.name, city: c.city, tier: c.tier,
-    badge: TIERS[c.tier]?.badge || null, since: c.since, about: c.about,
+    id: c.id, name: c.name, city: c.city,
+    since: c.since, about: c.about,
     rating: c.rating, jobs: c.jobs, verified: !!c.verified,
     initials: c.name.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toLocaleUpperCase('tr-TR')
   };
@@ -226,7 +224,7 @@ function publicPost(p, { deviceId, full = false } = {}) {
     company: publicCompany({ ...c })
   };
   if (full) {
-    out.phone = mine || device.tier === 'altin' ? c.phone : null;
+    out.phone = mine ? c.phone : null;
     out.phoneTail = (c.phone || '').slice(-4);
   }
   out.mine = !!mine;
@@ -236,16 +234,13 @@ function publicPost(p, { deviceId, full = false } = {}) {
 
 /* --------------------------------------------------------- listeleme */
 function rankScore(p, cm, filters) {
-  const c = cm.get(p.companyId) || {};
-  const tierRank = TIERS[c.tier]?.rank || 0;
   const ageMin = Math.max(0, (Date.now() - p.bumpedAt) / 60000);
   const fresh = Math.max(0, 1 - (Date.now() - p.bumpedAt) / (24 * 3600 * 1000)); // 24 saatte 0'a iner
-  // Ağırlık dengesi: tazelik (0-130) > kademe (0-24) > ilgi (0-20).
-  // Böylece yeni ilan her zaman üste düşer; ücretli kademe ve ilgi yalnızca
-  // benzer yaştaki ilanlar arasında fark yaratır.
+  // Ağırlık dengesi: tazelik (0-170) > ilgi (0-20).
+  // Yeni ilan her zaman üste düşer; ilgi yalnızca benzer yaştaki ilanlar arasında fark yaratır.
   const freshnessBonus = Math.max(0, 130 - ageMin * 2);
   const interest = Math.min(12, p.views / 25) + Math.min(8, p.saves * 0.4);
-  let score = tierRank * 6 + fresh * 40 + freshnessBonus + interest;
+  let score = fresh * 40 + freshnessBonus + interest;
   if (isBoosted(p)) score += 300;          // "öne al" hakkı 1 saat boyunca en üstte tutar
   if (p.status === 'solved') score -= 25;
   if (filters.routeMatch) score += filters.routeMatch(p) * 55;
@@ -324,11 +319,7 @@ function listPosts(q, deviceId) {
 
 /* ------------------------------------------------------------ eylemler */
 function createPost(deviceId, body) {
-  const device = getDevice(deviceId);
-  const tier = TIERS[device.tier] || TIERS.standart;
-  if (device.daily.posts >= tier.dailyPostLimit) {
-    return { error: `Günlük ilan sınırına ulaştınız (${tier.dailyPostLimit}). Yarın tekrar deneyin ya da üyeliğinizi yükseltin.` };
-  }
+  const device = getDevice(deviceId);   // tüm haklar sınırsız ve ücretsiz
   const cat = String(body.category || '');
   if (!CAT_BY_ID.has(cat)) return { error: 'Geçersiz kategori.' };
   const text = cleanText(body.text, 1000);
@@ -351,7 +342,7 @@ function createPost(deviceId, body) {
   if (!company) {
     company = {
       id: uid('f'), deviceId, name, city: titleCase(cleanText(body.city, 40)) || from || '',
-      phone: phone || '0500 000 00 00', tier: device.tier,
+      phone: phone || '0500 000 00 00',
       since: new Date().toISOString().slice(0, 7),
       about: cleanText(body.about, 400) || 'Yolpano üzerinden ilan veren taşımacı.',
       rating: 0, jobs: 0, verified: false, createdAt: Date.now(), token: uid('tok_')
@@ -362,7 +353,6 @@ function createPost(deviceId, body) {
     if (body.city) company.city = titleCase(cleanText(body.city, 40));
     if (phone) company.phone = phone;
     if (body.about) company.about = cleanText(body.about, 400);
-    company.tier = device.tier;
   }
   device.name = company.name;
 
@@ -418,8 +408,6 @@ function refreshPost(deviceId, id, token) {
   if (!p) return { error: 'İlan bulunamadı.' };
   if (p.token !== token) return { error: 'Bu ilan size ait değil.' };
   const device = getDevice(deviceId);
-  const tier = TIERS[device.tier];
-  if (device.daily.refreshes >= tier.dailyRefresh) return { error: `Günlük öne alma hakkınız bitti (${tier.dailyRefresh}).` };
   p.bumpedAt = Date.now();
   p.boostUntil = Date.now() + 60 * 60 * 1000;
   device.daily.refreshes += 1;
@@ -431,16 +419,10 @@ function refreshPost(deviceId, id, token) {
 function revealPhone(deviceId, postId) {
   const p = db.posts.find(x => x.id === postId);
   if (!p) return { error: 'İlan bulunamadı.' };
-  const device = getDevice(deviceId);
-  const tier = TIERS[device.tier];
   const c = db.companies.find(x => x.id === p.companyId);
-  const mine = (device.ownedPosts || []).includes(p.id);
-  if (!mine && device.daily.reveals >= tier.dailyReveal) {
-    return { error: `Bugünkü numara açma hakkınız bitti (${tier.dailyReveal}).`, needUpgrade: true };
-  }
-  if (!mine) device.daily.reveals += 1;
+  const mine = (getDevice(deviceId).ownedPosts || []).includes(p.id);
   saveDb();
-  return { ok: true, phone: c ? c.phone : null, left: Math.max(0, tier.dailyReveal - device.daily.reveals) };
+  return { ok: true, phone: mine ? c.phone : (c ? c.phone : null), left: 9999 };
 }
 
 function toggleSave(deviceId, postId) {
@@ -456,7 +438,6 @@ function toggleSave(deviceId, postId) {
 
 function toggleAlarm(deviceId, body) {
   const device = getDevice(deviceId);
-  const tier = TIERS[device.tier];
   const from = titleCase(cleanText(body.from, 40)) || null;
   const to = titleCase(cleanText(body.to, 40)) || null;
   const cat = CAT_BY_ID.has(body.cat) ? body.cat : null;
@@ -525,16 +506,6 @@ function reportPost(deviceId, postId, reason) {
   return { ok: true, flags: p.flags };
 }
 
-function setTier(deviceId, tier) {
-  if (!TIERS[tier]) return { error: 'Geçersiz üyelik.' };
-  const d = getDevice(deviceId);
-  d.tier = tier;
-  d.daily.reveals = 0;
-  db.companies.forEach(c => { if (c.deviceId === deviceId) c.tier = tier; });
-  saveDb();
-  return { ok: true, tier };
-}
-
 function stats() {
   const active = db.posts.filter(p => !isExpired(p) && p.status === 'active').length;
   const today = db.posts.filter(p => Date.now() - p.createdAt < 86400000).length;
@@ -550,15 +521,10 @@ function stats() {
 
 function viewerInfo(deviceId) {
   const d = getDevice(deviceId);
-  const tier = TIERS[d.tier];
   const company = db.companies.find(c => c.deviceId === deviceId);
   return {
-    deviceId, tier: d.tier, tierLabel: tier.label, badge: tier.badge,
-    quota: {
-      posts: { used: d.daily.posts, limit: tier.dailyPostLimit },
-      reveals: { used: d.daily.reveals, limit: tier.dailyReveal },
-      refreshes: { used: d.daily.refreshes, limit: tier.dailyRefresh }
-    },
+    deviceId,
+    todayPosts: d.daily.posts,
     saved: d.saved, alarms: d.alarms || [],
     company: company ? { ...publicCompany(company), phone: company.phone, token: company.token } : null,
     ownedPosts: d.ownedPosts || []
@@ -624,7 +590,7 @@ const server = http.createServer(async (req, res) => {
       if (p === '/api/bootstrap') {
         return send(res, 200, {
           provinces: PROVINCES.map(x => ({ name: x.name, plaka: x.plaka })),
-          categories: CATEGORIES, tiers: Object.values(TIERS).map(t => ({ ...t })),
+          categories: CATEGORIES,
           serviceOptions: SERVICE_OPTIONS, hotRoutes: HOT_ROUTES,
           pricing: PRICING, stats: stats(), viewer: viewerInfo(deviceId)
         });
@@ -690,7 +656,6 @@ const server = http.createServer(async (req, res) => {
       if (p === '/api/post/report') return send(res, 200, reportPost(deviceId, body.id, body.reason));
       if (p === '/api/alarm') return send(res, 200, toggleAlarm(deviceId, body));
       if (p === '/api/message') return send(res, 200, sendMessage(deviceId, body));
-      if (p === '/api/tier') return send(res, 200, setTier(deviceId, body.tier));
       if (p === '/api/reset') { resetDb(); return send(res, 200, { ok: true }); }
       if (p === '/api/demo/gen') { const post = generateDemoPost(); return send(res, 200, { ok: true, post: publicPost(post) }); }
       return send(res, 404, { error: 'Uç nokta bulunamadı.' });

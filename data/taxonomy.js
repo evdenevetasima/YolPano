@@ -1,4 +1,4 @@
-/* Yolpano — kategori, üyelik kademeleri ve ücret modeli parametreleri */
+/* Yolpano — kategoriler ve nakliye fiyat tahmini modeli parametreleri */
 
 // Kategoriler: defter akışındaki paylaşım tipleri
 const CATEGORIES = [
@@ -34,25 +34,6 @@ const CATEGORIES = [
   }
 ];
 
-// Üyelik kademeleri: günlük limit, yenileme hakkı ve arama sıralaması ağırlığı
-const TIERS = {
-  standart: {
-    id: 'standart', label: 'Standart', badge: null, color: 'slate',
-    dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 0,
-    perks: ['Sınırsız ilan paylaşımı', 'Sınırsız numara açma', 'Sınırsız öne alma', '20 rota alarmı']
-  },
-  gumus: {
-    id: 'gumus', label: 'Gümüş', badge: 'Gümüş Üye', color: 'sky',
-    dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 2,
-    perks: ['Ücretsiz üyenin tümü', 'Gümüş rozeti', 'Aramada üstte çıkma', '20 rota alarmı']
-  },
-  altin: {
-    id: 'altin', label: 'Altın Pro', badge: 'Altın Pro Üye', color: 'amber',
-    dailyPostLimit: 9999, dailyRefresh: 9999, dailyReveal: 9999, rank: 4,
-    perks: ['Ücretsiz üyenin tümü', 'Altın rozeti', 'Aramada en üstte', '20 rota alarmı']
-  }
-};
-
 // Fiyat tahmin modeli (bilgilendirme amaçlı, bağlayıcı değildir)
 const PRICING = {
   base: 3200,          // sabit yükleme/organizasyon payı (₺)
@@ -83,4 +64,4 @@ const HOT_ROUTES = [
   ['İzmir', 'Gaziantep'], ['Bursa', 'Diyarbakır'], ['İstanbul', 'Trabzon']
 ];
 
-module.exports = { CATEGORIES, TIERS, PRICING, SERVICE_OPTIONS, HOT_ROUTES };
+module.exports = { CATEGORIES, PRICING, SERVICE_OPTIONS, HOT_ROUTES };

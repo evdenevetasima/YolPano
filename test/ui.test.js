@@ -152,7 +152,7 @@ const ok = (name, cond, extra) => {
     await page.goto(BASE + '/#/pano', { waitUntil: 'load' });
     await page.waitForTimeout(800);
     ok('hesap sayfası: firma kartı', (await page.textContent('body')).includes('Arena Test Nakliyat'));
-    ok('kota çubukları var', (await page.locator('.bar').count()) === 3);
+    ok('kota kavramı arayüzden kaldırıldı', (await page.locator('.bar').count()) === 0);
     ok('ilanlarım listelendi', (await page.locator('.post').count()) >= 1);
 
     await page.goto(BASE + '/#/', { waitUntil: 'load' });

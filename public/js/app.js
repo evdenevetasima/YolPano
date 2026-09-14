@@ -17,7 +17,6 @@
   };
   localStorage.setItem('yp.device', S.deviceId);
   const CATS = {};
-  const TIERS = {};
 
   /* ----------------------------------------------------- yardımcılar */
   const $ = (s, r = document) => r.querySelector(s);
@@ -114,13 +113,10 @@
   }
   function badgeFor(co) {
     if (!co) return '';
-    let b = '';
-    if (co.badge) b += '<span class="badge badge-' + co.tier + '">' + esc(co.badge) + '</span>';
-    if (co.verified) b += '<span class="badge badge-verified">✓ Doğrulanmış</span>';
-    return b;
+    return co.verified ? '<span class="badge badge-verified">✓ Doğrulanmış</span>' : '';
   }
   function avatarFor(co) {
-    return '<span class="avatar t-' + esc(co.tier || 'standart') + '">' + esc(co.initials || 'YP') + '</span>';
+    return '<span class="avatar">' + esc(co.initials || 'YP') + '</span>';
   }
   function routeLine(p) {
     if (!p.from && !p.to) return '';
@@ -307,11 +303,6 @@
             (S.city ? '<button class="btn btn-sm btn-light" style="margin-top:10px;width:100%" data-act="city" data-city="">Şehir filtresini kaldır</button>' : '') +
           '</div>' +
 
-          '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Üyelik</span></div>' +
-            '<div class="tiercard">' + Object.values(TIERS).map(t => tierHTML(t)).join('') + '</div>' +
-            '<button class="btn btn-amber btn-sm" style="margin-top:10px;width:100%" data-act="upgrade">Üyeliği yönet</button>' +
-          '</div>' +
         '</aside>' +
       '</div>' +
       footerHTML();
@@ -332,14 +323,6 @@
       '<small>' + (a.cat ? CATS[a.cat].label : 'Tüm kategoriler') + '</small></div>' +
       '<button class="btn btn-sm btn-danger" data-act="del-alarm" data-key="' + esc(a.key) + '">Kaldır</button></div>').join('');
   }
-  function tierHTML(t) {
-    const on = S.data.viewer.tier === t.id;
-    const price = 'Ücretsiz';
-    return '<div class="tier ' + (on ? 'on' : '') + '">' +
-      '<div><b>' + esc(t.label) + '</b>' + (on ? ' <span class="badge badge-verified">aktif</span>' : '') +
-      '<ul>' + t.perks.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' +
-      '<span class="price">' + price + '</span></div>';
-  }
   function footerHTML() {
     return '<footer class="footer">' +
       '<div><b>Yolpano</b> — kurgusal demo platformu. Tüm firma, kişi ve ilanlar örnek veridir.</div>' +
@@ -349,7 +332,6 @@
   /* ------------------------------------------------------- composer */
   function composerHTML() {
     const v = S.data.viewer;
-    const q = v.quota.posts;
     const opts = S.data.provinces.map(p => '<option value="' + esc(p.name) + '">').join('');
     return '<section class="card composer ' + (localStorage.getItem('yp.composer') === '1' ? '' : 'collapsed') + '" id="composer">' +
       '<div class="composer-top">' +
@@ -379,7 +361,7 @@
           '<div class="field"><label>Kısa tanıtım</label><input id="cAbout" value="' + esc(v.company ? v.company.about : '') + '" placeholder="Filomuz, hizmet alanımız..."></div>' +
         '</div>' +
         '<div class="composer-foot">' +
-          '<div class="quota">Tüm haklar <b>sınırsız ve ücretsiz</b> · bugün <b>' + q.used + '</b> ilan paylaştın</div>' +
+          '<div class="quota">Yolpano tamamen ücretsiz — sınırsız paylaşım.</div>' +
           '<button class="btn btn-primary" data-act="publish" id="publishBtn">Yayınla</button>' +
         '</div>' +
       '</div>' +
@@ -694,11 +676,10 @@
       '<div class="layout">' +
         '<div style="display:flex;flex-direction:column;gap:16px">' +
           '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Firma</span>' +
-              '<span class="badge ' + (v.tier === 'altin' ? 'badge-altin' : 'badge-gumus') + '">' + esc(v.tierLabel) + '</span></div>' +
+            '<div class="card-title"><span><span class="dot"></span> Firma</span></div>' +
             (v.company
               ? '<div style="display:flex;gap:12px;align-items:center">' +
-                  '<span class="avatar t-' + esc(v.tier) + '">' + esc(v.company.initials) + '</span>' +
+                  '<span class="avatar">' + esc(v.company.initials) + '</span>' +
                   '<div><b style="font-size:17px">' + esc(v.company.name) + '</b>' +
                   '<div style="color:var(--muted);font-size:13px">' + esc(v.company.city) + ' · ' + esc(v.company.phone) + '</div>' +
                   '<div style="color:var(--muted);font-size:13px">' + esc(v.company.about || '') + '</div></div>' +
@@ -707,8 +688,8 @@
           '</div>' +
 
           '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Günlük haklar</span></div>' +
-            quotaBar('İlan verme', v.quota.posts) + quotaBar('Numara açma', v.quota.reveals) + quotaBar('Öne alma', v.quota.refreshes) +
+            '<div class="card-title"><span><span class="dot"></span> Ücretsiz platform</span></div>' +
+            '<p style="margin:0;color:var(--muted);font-size:13.5px">Yolpano’da hiçbir özellik için ödeme yoktur; ilan, numara açma, öne alma ve rota alarmlarının tümü sınırsızdır.</p>' +
           '</div>' +
 
           '<div class="card card-pad">' +
@@ -723,23 +704,10 @@
             '<div class="card-title"><span><span class="dot"></span> Rota alarmları</span><small>' + alarmQuotaText() + '</small></div>' +
             '<div id="alarmList">' + alarmListHTML() + '</div>' +
           '</div>' +
-          '<div class="card card-pad">' +
-            '<div class="card-title"><span><span class="dot"></span> Üyelik</span></div>' +
-            '<div class="tiercard">' + Object.values(TIERS).map(t => tierHTML(t)).join('') + '</div>' +
-            '<button class="btn btn-amber btn-sm" style="margin-top:10px;width:100%" data-act="upgrade">Üyeliği yönet</button>' +
-          '</div>' +
         '</aside>' +
       '</div>' + footerHTML();
     S.posts = myPosts.items;
   }
-  function quotaBar(label, q) {
-    const pct = q.limit >= 999 ? 4 : Math.min(100, Math.round((q.used / q.limit) * 100));
-    const warn = pct > 70 ? ' warn' : '';
-    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">' +
-      '<span>' + esc(label) + '</span><b>' + q.used + ' / ' + (q.limit >= 999 ? 'sınırsız' : q.limit) + '</b></div>' +
-      '<div class="bar' + warn + '"><i style="width:' + pct + '%"></i></div></div>';
-  }
-
   /* ------------------------------------------------------- yönetim */
   async function renderAdminView() {
     const st = await api('/api/stats');
@@ -792,7 +760,7 @@
       '<div class="crumbs"><a href="#/">Pano</a> › ' + esc(c.name) + '</div>' +
       '<div class="card card-pad" style="margin-bottom:16px">' +
         '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">' +
-          '<span class="avatar t-' + esc(c.tier) + '" style="width:56px;height:56px;font-size:18px">' + esc(c.initials) + '</span>' +
+          '<span class="avatar" style="width:56px;height:56px;font-size:18px">' + esc(c.initials) + '</span>' +
           '<div style="flex:1;min-width:220px"><h2>' + esc(c.name) + '</h2>' +
             '<div style="color:var(--muted);font-size:13px;margin-top:2px">' + esc(c.city) + ' · ' + esc(c.since) + 'den beri üye</div>' +
             '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">' + badgeFor(c) + '</div></div>' +
@@ -807,17 +775,6 @@
   }
 
   /* ------------------------------------------------------- üyelik */
-  function upgradeModal() {
-    modal('' +
-      '<div class="modal-head"><h3>Üyelik seç — tamamen ücretsiz</h3><button class="x-btn" data-act="close">✕</button></div>' +
-      '<div class="modal-body">' +
-        '<p style="color:var(--muted);margin-top:0">Yolpano tamamen ücretsizdir — hiçbir özellik için ödeme alınmaz. Kademe yalnızca rozet ve akış önceliği sağlar; seçim anında uygulanır.</p>' +
-        '<div class="tiercard">' + Object.values(TIERS).map(t => tierHTML(t) +
-          '<button class="btn btn-sm ' + (S.data.viewer.tier === t.id ? 'btn-light' : 'btn-primary') + '" data-act="set-tier" data-tier="' + esc(t.id) + '" style="margin-top:8px">' +
-          (S.data.viewer.tier === t.id ? 'Aktif üyelik' : 'Bu üyeliği seç') + '</button>').join('') + '</div>' +
-      '</div>', { narrow: true });
-  }
-
   /* -------------------------------------------------------- canlı akış */
   let es = null;
   function connectSSE() {
@@ -968,14 +925,6 @@
       const r = await api('/api/alarm', { from, to, cat });
       if (r.alarms) { S.data.viewer.alarms = r.alarms; const list = $('#alarmList'); if (list) list.innerHTML = alarmListHTML(); }
     }
-    if (act === 'upgrade') return upgradeModal();
-    if (act === 'set-tier') {
-      const r = await api('/api/tier', { tier: t.dataset.tier });
-      if (r.error) return toast('Olmadı', r.error, 'err');
-      await refreshViewer();
-      toast('Üyelik güncellendi', TIERS[r.tier].label + ' hakları aktif.', 'ok');
-      closeModal(); route();
-    }
     if (act === 'calc') return runCalc();
     if (act === 'calc-to-post') {
       localStorage.setItem('yp.composer', '1');
@@ -1042,7 +991,6 @@
       return;
     }
     S.data.categories.forEach(c => CATS[c.id] = c);
-    S.data.tiers.forEach(t => TIERS[t.id] = t);
     $('#savedCount').textContent = S.data.viewer.saved.length;
 
     $('#globalSearch').addEventListener('input', onSearch);
@@ -1050,7 +998,6 @@
       if (location.hash !== '#/' && location.hash !== '') location.hash = '#/';
       setTimeout(() => { const c = $('#composer'); if (c) { c.classList.remove('collapsed'); c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 80);
     });
-    $('#upgradeBtn').addEventListener('click', upgradeModal);
     $('#mobilePost').addEventListener('click', () => {
       if (location.hash !== '#/' && location.hash !== '') location.hash = '#/';
       setTimeout(() => { const c = $('#composer'); if (c) { c.classList.remove('collapsed'); c.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 80);

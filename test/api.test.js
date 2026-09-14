@@ -59,11 +59,8 @@ async function waitForServer(timeoutMs = 12000) {
     eq('bootstrap 200', bs.status, 200);
     eq('81 il yüklü', bs.body.provinces.length, 81);
     eq('6 kategori', bs.body.categories.length, 6);
-    eq('3 üyelik kademesi', bs.body.tiers.length, 3);
     ok('örnek ilanlar hazır', bs.body.stats.activeListings >= 30, 'aktif: ' + bs.body.stats.activeListings);
-    eq('yeni cihaz standart üye', bs.body.viewer.tier, 'standart');
-    ok('ücretsiz model: haklar sınırsız', bs.body.viewer.quota.posts.limit >= 999,
-      'limit=' + bs.body.viewer.quota.posts.limit);
+    ok('ücretli üyelik izi temizlendi', !('tiers' in bs.body) && bs.body.viewer.tier === undefined && !bs.body.viewer.quota);
 
     console.log('\n[2] Statik dosyalar');
     const home = await req('/');
@@ -149,13 +146,13 @@ async function waitForServer(timeoutMs = 12000) {
     ok('başkasına ait yeterli ilan var', others.length >= 5, 'adet=' + others.length);
     const rev = await req('/api/post/reveal', { method: 'POST', body: JSON.stringify({ id: others[0].id }) }, dev);
     ok('numara açıldı', /^\d{4} /.test(rev.body.phone || ''), JSON.stringify(rev.body));
-    ok('ücretsiz: numara açma sınırsız', rev.body.left >= 999, 'left=' + rev.body.left);
+    ok('numara açma sınırsız', !!rev.body.ok, JSON.stringify(rev.body));
 
     const rev2 = await req('/api/post/reveal', { method: 'POST', body: JSON.stringify({ id: others[1].id }) }, dev);
     ok('2. açma da başarılı (kota yok)', !!rev2.body.ok, JSON.stringify(rev2.body));
 
     const own = await req('/api/post/reveal', { method: 'POST', body: JSON.stringify({ id: newId }) }, dev);
-    ok('kendi ilanında da sınırsız', own.body.left >= 999, 'left=' + own.body.left);
+    ok('kendi ilanında da sorunsuz', !!own.body.ok, JSON.stringify(own.body));
     ok('kendi ilanının numarası doğrudan görünüyor', /^\d{4} /.test(own.body.phone || ''), JSON.stringify(own.body));
 
     const rev3 = await req('/api/post/reveal', { method: 'POST', body: JSON.stringify({ id: others[2].id }) }, dev);
@@ -220,12 +217,11 @@ async function waitForServer(timeoutMs = 12000) {
     }
     eq('ücretsiz: 5 ilanın tümü kabul edildi', made, 5);
 
-    console.log('\n[10] Üyelik yükseltme');
+    console.log('\n[10] Ücretli üyelik ucu kaldırıldı');
     const up = await req('/api/tier', { method: 'POST', body: JSON.stringify({ tier: 'altin' }) }, d2);
-    eq('Altın Pro aktif', up.body.tier, 'altin');
+    eq('tier ucu artık yok (404)', up.status, 404);
     const v = await req('/api/viewer', {}, d2);
-    ok('altın kademe de ücretsiz/sınırsız', v.body.quota.posts.limit >= 999,
-      'limit=' + v.body.quota.posts.limit);
+    ok("viewer'da tier/kota kavramı yok", v.body.tier === undefined && !v.body.quota);
 
     console.log('\n[11] Filtreleme ve sıralama');
     const catFilter = await req('/api/posts?cat=asansor&limit=40', {}, dev);

@@ -62,7 +62,6 @@ npm run test:ui      # Arayüz: gerçek Chromium ile 43 adım (ilk kurulumda
 - **Tamamen ücretsiz:** hiçbir özellik için ödeme yok; numara gösterme, ilan, öne alma
   ve rota alarmlarının tümü sınırsız.
 - **Mesajlaşma** — ilan bazlı konu dizisi, canlı (SSE) iletilen yanıtlar.
-- **Üyelik kademeleri** — ücretsiz; yalnızca rozet ve akış önceliği farkı yaratır.
 - **İlan sahibi araçları** — düzenle, "işi tamamlandı" işaretle, sil, **öne al**.
 
 ### Yolpano'ya özel ek özellikler

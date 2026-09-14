@@ -133,7 +133,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
 .btn-light:hover { border-color: var(--accent); color: var(--accent-ink); }
 .btn-dark { background: var(--ink); color: #fff; }
 .btn-dark:hover { background: #14313b; }
-.btn-amber { background: var(--amber); color: #3a2405; }
 .btn-danger { background: var(--rose-soft); color: #a12339; border-color: #f6ccd4; }
 .btn-sm { padding: 6px 11px; font-size: 13px; border-radius: 9px; }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
@@ -244,8 +243,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
   display: grid; place-items: center; font-weight: 800; font-size: 14px; color: #fff;
   background: linear-gradient(140deg, var(--ink-2), var(--slate)); letter-spacing: .02em;
 }
-.avatar.t-gumus { background: linear-gradient(140deg, #4f7f9c, #8fb6cd); }
-.avatar.t-altin { background: linear-gradient(140deg, #b3761b, #f0a12b); }
 .who { min-width: 0; flex: 1 1 auto; }
 .who a { font-weight: 750; font-size: 15px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .who a:hover { color: var(--accent-ink); }
@@ -254,8 +251,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
   display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800;
   padding: 2px 7px; border-radius: 999px; letter-spacing: .03em;
 }
-.badge-gumus { background: var(--sky-soft); color: #1b6091; }
-.badge-altin { background: var(--amber-soft); color: #8a5c10; }
 .badge-verified { background: var(--accent-soft); color: var(--accent-ink); }
 .verified-dot { color: var(--accent); font-weight: 800; }
 
@@ -363,15 +358,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: -.01em; }
 .hotroutes button:hover { border-color: var(--accent); background: var(--accent-soft); }
 .hotroutes small { color: var(--muted); font-weight: 600; }
 
-.tiercard { display: flex; flex-direction: column; gap: 8px; }
-.tier {
-  display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line);
-  border-radius: var(--r-m); padding: 11px 12px; background: #fbfdfc;
-}
-.tier.on { border-color: var(--accent); background: var(--accent-soft); }
-.tier b { font-size: 14px; }
-.tier ul { margin: 5px 0 0; padding-left: 16px; font-size: 12px; color: var(--muted); }
-.tier .price { margin-left: auto; font-weight: 800; white-space: nowrap; }
 
 /* -------------------------------------------------------------- modal */
 .overlay {
